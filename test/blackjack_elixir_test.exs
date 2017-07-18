@@ -1,8 +1,11 @@
 defmodule BlackjackElixirTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: false
   doctest BlackjackElixir
+  alias Porcelain.Process, as: Proc
 
-  import ExUnit.CaptureIO
+  setup_all do
+    Porcelain.reinit(Porcelain.Driver.Basic)
+  end
 
  # test "make builds the application" do
  #   assert {_, 0} = System.cmd("make", ["blackjack"])
@@ -10,17 +13,14 @@ defmodule BlackjackElixirTest do
  # end
 
   test "I can hit or stay" do
+    cmd = Path.join(File.cwd!, "blackjack_elixir")
+    proc = Porcelain.spawn_shell(cmd, in: :receive, out: :stream)
+
     pid = spawn(fn ->
-        System.cmd(Path.join(File.cwd!, "blackjack_elixir"), [],
-        into: IO.stream(:stdio, :line)) end)
+      Proc.send_input(proc, "h\n")
+    end)
 
-    Process.sleep(10000)
-
-    IO.inspect(Process.alive?(pid), label: "alive?")
-    IO.puts(:stdio, "h")
-    Process.sleep(1000)
-    IO.inspect(Process.alive?(pid), label: "alive?")
-
-    Process.sleep(10000)
+    actual = Enum.into(proc.out, "")
+    assert String.contains?(actual, "YOU DID IT!")
   end
 end
