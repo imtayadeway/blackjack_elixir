@@ -1,18 +1,10 @@
 defmodule BlackjackElixirTest do
-  use ExUnit.Case, async: false
+  use ExUnit.Case
   doctest BlackjackElixir
   alias Porcelain.Process, as: Proc
 
-  setup_all do
-    Porcelain.reinit(Porcelain.Driver.Basic)
-  end
-
- # test "make builds the application" do
- #   assert {_, 0} = System.cmd("make", ["blackjack"])
- #   assert {"hello\n", 0} = System.cmd(Path.join(File.cwd!, "blackjack_elixir"), [])
- # end
-
   test "I can hit or stay" do
+    {_, 0} = System.cmd("make", ["blackjack"])
     cmd = Path.join(File.cwd!, "blackjack_elixir")
     proc = Porcelain.spawn_shell(cmd, in: :receive, out: :stream)
 
