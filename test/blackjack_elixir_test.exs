@@ -16,9 +16,7 @@ defmodule BlackjackElixirTest do
     cmd = Path.join(File.cwd!, "blackjack_elixir")
     proc = Porcelain.spawn_shell(cmd, in: :receive, out: :stream)
 
-    pid = spawn(fn ->
-      Proc.send_input(proc, "h\n")
-    end)
+    spawn(fn -> Proc.send_input(proc, "h\n") end)
 
     actual = Enum.into(proc.out, "")
     assert String.contains?(actual, "YOU DID IT!")
